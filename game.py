@@ -11,8 +11,8 @@ class Board(object):
     """board for the game"""
 
     def __init__(self, **kwargs):
-        self.width = int(kwargs.get('width', 15))
-        self.height = int(kwargs.get('height', 15))
+        self.width = int(kwargs.get('width', 10))
+        self.height = int(kwargs.get('height', 10))
         # board states stored as a dict,
         # key: move as location on the board,
         # value: player as pieces type
@@ -90,10 +90,12 @@ class Board(object):
         n = self.n_in_row
 
         moved = list(set(range(width * height)) - set(self.availables))
-        if len(moved) < self.n_in_row *2-1:
+        if len(moved) < self.n_in_row * 2 - 1:
             return False, -1
 
         for m in moved:
+            if m not in states:
+                continue
             h = m // width
             w = m % width
             player = states[m]
@@ -140,28 +142,24 @@ class Game(object):
         width = board.width
         height = board.height
 
-        print("Player", player1, "with X".rjust(3))
-        print("Player", player2, "with O".rjust(3))
+        print("Player", player1, "with ❌".rjust(3))
+        print("Player", player2, "with ✅".rjust(3))
         print()
-
-        # Print column numbers with better alignment
-        print("    ", end='')  # Offset for row numbers
         for x in range(width):
-            print(f"{x:^5}", end='')  # Center-align column numbers
-        print('\n')
-
+            print("{0:8}".format(x), end='')
+        print('\r\n')
         for i in range(height - 1, -1, -1):
-            print(f"{i:<4}", end='')  # Left-align row numbers
+            print("{0:4d}".format(i), end='')
             for j in range(width):
                 loc = i * width + j
                 p = board.states.get(loc, -1)
                 if p == player1:
-                    print(' X '.center(5), end='')
+                    print('❌'.center(8), end='')
                 elif p == player2:
-                    print(' O '.center(5), end='')
+                    print('✅'.center(8), end='')
                 else:
-                    print(' . '.center(5), end='')
-            print('\n')
+                    print('_'.center(8), end='')
+            print('\r\n\r\n')
 
     def start_play(self, player1, player2, start_player=0, is_shown=1):
         """start a game between two players"""
